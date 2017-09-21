@@ -315,7 +315,7 @@ gapminder %>%
 ```{r}
 mutate(gapminder, gdp = gdpPercap * pop)
 ```
-
+Returns a new object which is printed only but not stored. If we want to store it, we need to assign it to a new variable.
 You can define multiple new variables -- even back-dependent on new ones! Let's also create a column for GDP in billions, rounded to one decimal:
 
 ```{r}
@@ -323,10 +323,16 @@ mutate(gapminder,
        gdp     = gdpPercap * pop, 
        gdpBill = round(gdp/1000000000, 1))
 ```
+gdp is created in the line before gdpBill, therefore it can be recognized as a variable.
 
 `transmute` works the same way, but drops all other variables. 
 
 __Exercise__: Make a new column called `cc` that pastes the country name followed by the continent, separated by a comma. (Hint: use the `paste` function with the `sep=", "` argument).
+```{r}
+mutate(gapminder, cc = paste(country, continent, sep=","))
+```
+
+
 
 #### `summarize` and `group_by`
 
@@ -349,6 +355,8 @@ The `group_by` function splits the tibble into parts -- in the above case, by co
 ```{r}
 group_by(gapminder, continent, country, year < 1970)
 ```
+Year < 1970 is a binary group.
+
 
 Let's get a summary of this grouping:
 
@@ -357,6 +365,7 @@ Let's get a summary of this grouping:
     group_by(continent, country, year < 1970) %>% 
     summarize(mean_pop=mean(pop), sd_pop=sd(pop)))
 ```
+
 
 Note that the output is still a tibble, but one "layer" of grouping has been peeled back: the `year < 1970` variable. `summarize` again and you'll see that the tibble was no longer grouped by `year < 1970`. 
 
@@ -367,7 +376,24 @@ out1 %>%
 
 
 __Exercise__: Find the minimum GDP per capita experienced by each country
+```{r}
+gapminder %>%
+  group_by(country) %>%
+  summarize(mingdp=min(gdpPercap))
+```
+
 
 __Exercise__: How many years of record does each country have?
+```{r}
+gapminder %>%
+  group_by(country) %>%
+  summarize(n_distinct(year))
+```
 
 __Exercise__: Within Asia, what are the min and max life expectancies experienced in each year?
+```{r}
+filter(gapminder, continent == "Asia") %>%
+  group_by(year) %>%
+  summarize(minexp=min(lifeExp), maxexp=max(lifeExp))
+```
+
