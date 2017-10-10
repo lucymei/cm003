@@ -23,11 +23,12 @@ View(hfd_y)
 ```
 
 ```{r}
-hfd_y %>%
+my_plot <- hfd_y %>%
   filter(year > 1950) %>%
   ggplot(aes(x=year, y = My_value)) +
   geom_point() +
   facet_wrap(~ Measures, scales = "free_y") # want to free x and y scales if different groups have different ranges for x and y, or we can choose to just free one axis.
+my_plot
 ```
 We need to modify the plots.
 
@@ -54,12 +55,38 @@ install.packages("reshape2")
 ```
 ```{r}
 hfd_y_mean <-hfd_y %>%
-  reshape2::dcast(year - Measures,
+  reshape2::dcast(year~Measures,
         value.var="My_value",
-        fun.aggregate=mean, na.rm=TRUE) # can tell reshape2 that there are more than two 
+        fun.aggregate=var, na.rm=TRUE) # can tell reshape2 that there are more than two 
 # aggregate function - when we have more than one values, we use aggregation function - take in more than one value and return one value
 # when there is more than one value, use mean 
 View(hfd_y_mean)
+# get year, artist_familiarity, artist_hotttnesss, duration, but duration is no longer "year", it is some weird numbers which is the variance of the songs for that duration
+# if we don't want to use reshape2, can use group_by and summarize
 ```
 
+function
+dataframe
+
+str(hfd_y_mean)
+typeof(hfd_y_mean)
+class(hfd_y_mean)
+
+double is a special kind of number
+can define a number as an integer by adding L after the number
+
+### challenge 3
+What kind of stuff is my_plot?
+```{r}
+typeof(my_plot)
+class(my_plot)
+```
+
+
+### challenge 4
+What kind of stuff is %>% ?
+```{r}
+typeof(`%>%`)
+class(`%>%`)
+```
 
