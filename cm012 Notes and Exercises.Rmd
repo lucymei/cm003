@@ -1,0 +1,147 @@
+---
+title: "Untitled"
+output: html_document
+---
+
+### Warmup challenge: find a lot of different types and classses
+
+```{r}
+library(tidyverse)
+library(gapminder)
+
+# characters
+typeof("yes")
+
+# numerics
+typeof(5)
+
+# Function
+typeof(`%>%`)
+class(`%>%`)
+
+# Integer
+typeof(5L)
+
+# logical
+typeof(TRUE)
+
+# Builtins
+typeof(c)
+class(c)
+
+# list
+typeof(gapminder)
+class(gapminder)
+
+# plot
+my_plot <- singer_locations %>%
+  ggplot(aes(year, duration))
+typeof(my_plot)
+class(my_plot)
+
+# list
+x <- list(number_of_cats = 1, cat_color = "red", plot = my_plot)
+typeof(x)
+class(x)
+
+# Matrix
+# Must have the same type of things
+my_mat <- matrix(c(1,2,3,4), nrow =2, byrow=TRUE)
+# It won't work if we want to put 1,2,a,b, matrix will turn 1,2 into characters
+data("singer_locations")
+# This is a list of columns and these columns can be different types 
+
+
+# Factors
+glimpse(gapminder)
+str(gapminder$country)
+# A factor is a special way of looking at strings, when we have labels in characters, and we have assignments to thses labels
+# The value of Alfghanistan is an integer 1, Alfghanistan is only a label of that integer, these are levels (1->"Afghanistan" each number is assigned to a label)
+install.packages("forcats")
+library(forcats)
+library(singer)
+data("singer_locations")
+
+glimpse(singer_locations)
+
+sl <- singer_locations %>%
+  mutate(artist_namefactor = as_factor(artist_name))
+glimpse(sl)
+
+sl <- sl %>%
+  mutate(artist_namefactor_base=factor(artist_name))
+
+glimpse(sl)
+
+# the order of the level is changed if using factor(), as_factor() keeps everything
+x <- c("a", "c", "b")
+as_factor(x)
+
+factor(x)
+```
+
+
+### Change one entry of singer_locations from one type to another and see what happens
+```{r}
+library(singer)
+
+copysinger <- singer_locations
+copysinger[1,8] <- "long"
+# In the bracket the first value is the row, the second value is the column, if you change one entry of the column from numerics to characters, the value of the entire column will become characters.
+glimpse(copysinger)
+
+mean(singer_locations$duration, na.rm=TRUE)
+mean(copysinger, na.rm=TRUE)
+
+```
+
+
+### reading and writing to file
+The data now is only memory, but not on the hard disk. 
+```{r}
+read_csv()
+
+install.packages("readxl")
+readxl
+# read excel files 
+
+write_csv()
+# write dataframe from memory into a file
+```
+```{r}
+sl %>%
+  mutate(top_an = fct_lump(artist_namefactor, n = 10)) %>% # take the list common factors and lump together to the same level
+  count(artist_name) %>%
+  arrange(-n)
+
+# Homework: plot mean duration by artist with and without lumping 
+sl %>%
+  summarise(mean_duration=mean(duration))%>%
+  ggplot(aes(artist_name, mean_duration)) +
+  geom_point(aes(artist_name, mean_duration))
+  theme_bw()
+
+sl %>%
+  summarise(mean_duration=mean(duration))%>%
+  ggplot(aes(artist_namefactor, mean_duration)) +
+  geom_pint(aes(artist_namefactor, mean_duration))
+  theme_bw()
+```
+
+```{r}
+sl <-sl %>%
+  mutate(city_factor = ifelse(is.na(city), "Missing_information", city), 
+         city_factor = as_factor(city_factor))
+
+sl %>%
+  mutate(top_cities = fct_lump(city_factor, n=7)) %>%
+  count(top_cities)
+
+# fct_lump can still process things that are not factor but then it will loose the "Missing_information" part
+```
+
+```{r}
+# use forcats to clean up the city stuff
+
+```
+
