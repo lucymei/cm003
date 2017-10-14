@@ -257,3 +257,15 @@ h_gap$country %>% fct_relevel("Romania", "Haiti") %>%
   levels()
 ```
 
+# Recode the levels
+```{r}
+i_gap <- gapminder %>% 
+  filter(country %in% c("United States", "Sweden", "Australia")) %>% 
+  droplevels()
+i_gap$country %>% levels()
+
+i_gap$country %>%
+  fct_recode("USA" = "United States", "Oz" = "Australia") %>% levels()
+```
+
+
